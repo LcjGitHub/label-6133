@@ -1,0 +1,13 @@
+{
+  "name": "seal-collection",
+  "version": "1.0.0",
+  "private": true,
+  "description": "个人藏书印管理",
+  "scripts": {
+    "install:backend": "npm install --prefix backend",
+    "install:frontend": "npm install --prefix frontend",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "start": "npm start --prefix backend",
+    "dev": "npm run dev --prefix frontend"
+  }
+}
