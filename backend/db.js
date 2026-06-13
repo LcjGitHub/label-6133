@@ -30,13 +30,21 @@ function queryOne(sql, params = []) {
 }
 
 function run(sql, params = []) {
-  db.run(sql, params);
+  const stmt = db.prepare(sql);
+  stmt.bind(params);
+  stmt.step();
+  stmt.free();
   persist();
 }
 
-function lastInsertRowId() {
-  const row = queryOne('SELECT last_insert_rowid() AS id');
-  return row.id;
+function runAndGetLastId(sql, params = []) {
+  const stmt = db.prepare(sql);
+  stmt.bind(params);
+  stmt.step();
+  stmt.free();
+  const idRow = queryOne('SELECT last_insert_rowid() AS id');
+  persist();
+  return idRow ? idRow.id : null;
 }
 
 function initSchema() {
@@ -138,5 +146,5 @@ module.exports = {
   queryAll,
   queryOne,
   run,
-  lastInsertRowId
+  runAndGetLastId
 };

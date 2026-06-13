@@ -1,8 +1,8 @@
 {
-  "name": "seal-collection",
+  "name": "stamp-record-app",
   "version": "1.0.0",
   "private": true,
-  "description": "个人藏书印管理",
+  "description": "藏书印钤印日志",
   "scripts": {
     "install:backend": "npm install --prefix backend",
     "install:frontend": "npm install --prefix frontend",

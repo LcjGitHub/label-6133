@@ -29,12 +29,19 @@ export const useRecordStore = defineStore('records', () => {
 
   async function addRecord(data) {
     const res = await createRecord(data);
-    return res.data.data;
+    const record = res.data.data;
+    records.value.unshift(record);
+    return record;
   }
 
   async function editRecord(id, data) {
     const res = await updateRecord(id, data);
-    return res.data.data;
+    const record = res.data.data;
+    const index = records.value.findIndex((r) => r.id === id);
+    if (index !== -1) {
+      records.value.splice(index, 1, record);
+    }
+    return record;
   }
 
   async function removeRecord(id) {

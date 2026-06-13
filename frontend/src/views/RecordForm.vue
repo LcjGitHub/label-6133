@@ -5,7 +5,7 @@
       <h2>{{ isCreate ? '新增钤印记录' : '编辑钤印记录' }}</h2>
     </div>
 
-    <el-card class="form-card">
+    <el-card class="form-card" v-loading="formLoading">
       <el-form
         ref="formRef"
         :model="form"
@@ -85,6 +85,7 @@ const router = useRouter();
 const recordStore = useRecordStore();
 
 const submitting = ref(false);
+const formLoading = ref(false);
 const formRef = ref(null);
 
 const form = ref({
@@ -112,6 +113,7 @@ const isCreate = computed(() => props.mode === 'create');
 onMounted(async () => {
   if (props.mode === 'create') return;
 
+  formLoading.value = true;
   try {
     const data = await recordStore.getRecord(props.id);
     form.value = {
@@ -125,6 +127,8 @@ onMounted(async () => {
   } catch {
     ElMessage.error('加载失败，记录可能不存在');
     router.push('/');
+  } finally {
+    formLoading.value = false;
   }
 });
 
