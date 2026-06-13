@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 const dataDir = path.join(__dirname, 'data');
-const dbPath = path.join(dataDir, 'stamp_materials.db');
+const dbPath = path.join(dataDir, 'stamp_borrow.db');
 
 let db = null;
 
@@ -49,20 +49,6 @@ function runAndGetLastId(sql, params = []) {
 
 function initSchema() {
   db.run(`
-    CREATE TABLE IF NOT EXISTS stamp_materials (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      origin TEXT NOT NULL,
-      hardness TEXT NOT NULL,
-      color TEXT NOT NULL,
-      description TEXT NOT NULL,
-      image_url TEXT NOT NULL,
-      created_at TEXT DEFAULT (datetime('now', 'localtime')),
-      updated_at TEXT DEFAULT (datetime('now', 'localtime'))
-    )
-  `);
-
-  db.run(`
     CREATE TABLE IF NOT EXISTS stamps (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       inscription TEXT NOT NULL,
@@ -86,66 +72,6 @@ function initSchema() {
       updated_at TEXT DEFAULT (datetime('now', 'localtime'))
     )
   `);
-  persist();
-}
-
-function seedMaterialData() {
-  const { total } = queryOne('SELECT COUNT(*) AS total FROM stamp_materials');
-  if (total > 0) {
-    return;
-  }
-
-  const seeds = [
-    {
-      name: '寿山石',
-      origin: '福建省福州市寿山乡',
-      hardness: '摩氏硬度2-3，质地温润细腻',
-      color: '色彩丰富，有红、黄、白、黑、灰、绿等色',
-      description: '寿山石是中国传统四大印章石之首，被誉为"石中之王"。其质地温润细腻，色彩斑斓，纹理奇特，尤以田黄、芙蓉、鸡血等品种最为珍贵。寿山石印章文化源远流长，是篆刻艺术的最佳载体之一。',
-      image_url: 'https://picsum.photos/seed/shoushan-stone/400/400'
-    },
-    {
-      name: '青田石',
-      origin: '浙江省青田县',
-      hardness: '摩氏硬度1.5-2，质地细腻脆爽',
-      color: '以青色为主，兼有黄、白、绿、蓝等色',
-      description: '青田石是中国四大印章石之一，以其质地细腻、脆爽适中、易于镌刻而闻名于世。青田石颜色丰富，其中以"封门青"最为珍贵，色如碧玉，温润细腻，是篆刻家最喜爱的印材之一。',
-      image_url: 'https://picsum.photos/seed/qingtian-stone/400/400'
-    },
-    {
-      name: '昌化石',
-      origin: '浙江省临安市昌化镇',
-      hardness: '摩氏硬度2-3，质地坚韧细腻',
-      color: '多为灰白色，以含有鲜红色辰砂的鸡血石最为名贵',
-      description: '昌化石是中国四大印章石之一，尤以"鸡血石"闻名天下。鸡血石因含有鲜红色的辰砂（硫化汞）而得名，其红如鸡血，艳丽夺目，被誉为"印石皇后"。昌化石质地坚韧，适合镌刻，是收藏级印章的首选材料。',
-      image_url: 'https://picsum.photos/seed/changhua-stone/400/400'
-    },
-    {
-      name: '巴林石',
-      origin: '内蒙古自治区赤峰市巴林右旗',
-      hardness: '摩氏硬度2-3，质地温润细腻',
-      color: '色彩丰富，有红、黄、蓝、绿、紫、白、黑等多种颜色',
-      description: '巴林石是中国四大印章石之一，产自内蒙古草原。其质地温润细腻，色彩绚丽多姿，尤以"巴林鸡血"和"福黄石"最为珍贵。巴林石品种繁多，纹理奇特，是篆刻和收藏的极佳选择。',
-      image_url: 'https://picsum.photos/seed/balin-stone/400/400'
-    },
-    {
-      name: '和田玉',
-      origin: '新疆和田地区',
-      hardness: '摩氏硬度6-6.5，质地致密坚硬',
-      color: '以白色为主，兼有青、黄、碧、墨等色',
-      description: '和田玉是中国四大名玉之首，被誉为"玉中之王"。其质地致密细腻，温润如脂，尤以羊脂白玉最为珍贵。和田玉印章高贵典雅，质地坚硬耐磨，能够保存千年，是权力和身份的象征。',
-      image_url: 'https://picsum.photos/seed/hetian-jade/400/400'
-    }
-  ];
-
-  for (const item of seeds) {
-    db.run(
-      `INSERT INTO stamp_materials (name, origin, hardness, color, description, image_url)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [item.name, item.origin, item.hardness, item.color, item.description, item.image_url]
-    );
-  }
-
   persist();
 }
 
@@ -211,7 +137,6 @@ function seedBorrowRecordData() {
 }
 
 function seedData() {
-  seedMaterialData();
   seedStampData();
   seedBorrowRecordData();
 }

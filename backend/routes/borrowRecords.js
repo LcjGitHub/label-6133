@@ -15,7 +15,7 @@ const statusLabels = {
   returned: '已归还'
 };
 
-function validateBorrowBody(body, isUpdate = false) {
+function validateBorrowBody(body, isUpdate = false, recordId = null) {
   if (!isUpdate) {
     const required = ['stamp_id', 'borrower_name', 'borrow_date', 'expected_return_date'];
     for (const field of required) {
@@ -29,6 +29,14 @@ function validateBorrowBody(body, isUpdate = false) {
     const stamp = queryOne('SELECT id FROM stamps WHERE id = ?', [body.stamp_id]);
     if (!stamp) {
       return '印章不存在';
+    }
+    const existingBorrow = queryOne(
+      `SELECT id FROM borrow_records 
+       WHERE stamp_id = ? AND status = 'borrowed' AND id != ?`,
+      [body.stamp_id, recordId || 0]
+    );
+    if (existingBorrow) {
+      return '该印章正在借出中，不能重复登记外借';
     }
   }
 
@@ -55,6 +63,16 @@ function validateBorrowBody(body, isUpdate = false) {
     const date = new Date(body.expected_return_date);
     if (isNaN(date.getTime())) {
       return '预计归还日期不是有效日期';
+    }
+  }
+
+  const borrowDate = body.borrow_date;
+  const expectedReturnDate = body.expected_return_date;
+  if (borrowDate && expectedReturnDate) {
+    const borrow = new Date(borrowDate);
+    const expected = new Date(expectedReturnDate);
+    if (expected < borrow) {
+      return '预计归还日期不得早于借出日期';
     }
   }
 
@@ -114,7 +132,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const error = validateBorrowBody(req.body);
+  const error = validateBorrowBody(req.body, false, null);
   if (error) {
     return res.status(400).json({ message: error });
   }
@@ -142,7 +160,7 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ message: '外借记录不存在' });
   }
 
-  const error = validateBorrowBody(req.body, true);
+  const error = validateBorrowBody(req.body, true, req.params.id);
   if (error) {
     return res.status(400).json({ message: error });
   }

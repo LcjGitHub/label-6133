@@ -1,7 +1,7 @@
 <template>
   <div class="statistics-page">
     <div class="page-header">
-      <h2>藏书印统计看板</h2>
+      <h2>印章统计看板</h2>
     </div>
 
     <div v-loading="stampStore.statisticsLoading" class="stats-content">

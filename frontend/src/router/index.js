@@ -20,7 +20,7 @@ const routes = [
     path: '/statistics',
     name: 'Statistics',
     component: Statistics,
-    meta: { title: '统计看板', activeTab: 'statistics' }
+    meta: { title: '印章统计看板', activeTab: 'statistics' }
   },
   {
     path: '/stamps/new',

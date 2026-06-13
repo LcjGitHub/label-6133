@@ -1,7 +1,7 @@
 <template>
   <div class="stamp-list">
     <div class="page-header">
-      <h2>藏书印列表</h2>
+      <h2>印章列表</h2>
       <span class="count">共 {{ stampStore.stamps.length }} 方印章</span>
     </div>
 

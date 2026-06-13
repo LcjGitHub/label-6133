@@ -18,7 +18,7 @@
               <span>统计看板</span>
             </el-radio-button>
           </el-radio-group>
-          <el-button type="primary" @click="goCreate">
+          <el-button v-if="activeTab !== 'statistics'" type="primary" @click="goCreate">
             <el-icon><Plus /></el-icon>
             <span>{{ activeTab === 'borrow' ? '登记外借' : '新增印章' }}</span>
           </el-button>

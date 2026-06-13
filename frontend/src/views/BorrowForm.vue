@@ -22,7 +22,7 @@
             :disabled="!isCreate"
           >
             <el-option
-              v-for="item in borrowStore.stamps"
+              v-for="item in availableStamps"
               :key="item.id"
               :label="`${item.inscription}（${item.material}）`"
               :value="item.id"
@@ -124,17 +124,48 @@ const form = ref({
   status: 'borrowed'
 });
 
+const borrowedStampIds = computed(() => {
+  const ids = new Set();
+  borrowStore.borrowRecords.forEach((r) => {
+    if (r.status === 'borrowed' && r.id !== props.id) {
+      ids.add(r.stamp_id);
+    }
+  });
+  return ids;
+});
+
+const availableStamps = computed(() => {
+  if (props.mode === 'edit') {
+    return borrowStore.stamps;
+  }
+  return borrowStore.stamps.filter((s) => !borrowedStampIds.value.has(s.id));
+});
+
+const validateReturnDate = (_rule, value, callback) => {
+  if (!value) {
+    callback(new Error('请选择预计归还日期'));
+    return;
+  }
+  if (form.value.borrow_date && new Date(value) < new Date(form.value.borrow_date)) {
+    callback(new Error('预计归还日期不能早于借出日期'));
+    return;
+  }
+  callback();
+};
+
 const rules = {
   stamp_id: [{ required: true, message: '请选择印章', trigger: 'change' }],
   borrower_name: [{ required: true, message: '请输入借用人姓名', trigger: 'blur' }],
   borrow_date: [{ required: true, message: '请选择借出日期', trigger: 'change' }],
-  expected_return_date: [{ required: true, message: '请选择预计归还日期', trigger: 'change' }]
+  expected_return_date: [
+    { required: true, validator: validateReturnDate, trigger: 'change' }
+  ]
 };
 
 const isCreate = computed(() => props.mode === 'create');
 
 onMounted(async () => {
-  await borrowStore.loadStamps();
+  await Promise.all([borrowStore.loadStamps(), borrowStore.loadBorrowRecords('borrowed')]);
 
   if (props.mode === 'create') return;
 

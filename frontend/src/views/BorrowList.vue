@@ -16,12 +16,12 @@
         <span class="tab-count">（{{ returnedCount }}）</span>
       </el-tab-pane>
       <el-tab-pane label="全部记录" name="all">
-        <span class="tab-count">（{{ borrowStore.borrowRecords.length }}）</span>
+        <span class="tab-count">（{{ allCount }}）</span>
       </el-tab-pane>
     </el-tabs>
 
     <el-card v-loading="borrowStore.loading" class="table-card">
-      <el-table :data="borrowStore.borrowRecords" stripe style="width: 100%">
+      <el-table :data="filteredRecords" stripe style="width: 100%">
         <el-table-column prop="id" label="记录编号" width="100" />
         <el-table-column prop="stamp_id" label="印章编号" width="100" />
         <el-table-column prop="inscription" label="印文" width="160">
@@ -89,6 +89,8 @@ const borrowStore = useBorrowRecordStore();
 
 const activeTab = ref('borrowed');
 
+const allCount = computed(() => borrowStore.borrowRecords.length);
+
 const borrowedCount = computed(() =>
   borrowStore.borrowRecords.filter((r) => r.status === 'borrowed').length
 );
@@ -97,16 +99,21 @@ const returnedCount = computed(() =>
   borrowStore.borrowRecords.filter((r) => r.status === 'returned').length
 );
 
+const filteredRecords = computed(() => {
+  if (activeTab.value === 'all') return borrowStore.borrowRecords;
+  return borrowStore.borrowRecords.filter((r) => r.status === activeTab.value);
+});
+
 onMounted(() => {
   loadData();
 });
 
 async function loadData() {
-  await borrowStore.loadBorrowRecords(activeTab.value);
+  await borrowStore.loadBorrowRecords('all');
 }
 
-function handleTabChange(tabName) {
-  borrowStore.loadBorrowRecords(tabName);
+function handleTabChange(_tabName) {
+  // 切换 tab 时不重新加载，使用前端过滤
 }
 
 function goCreate() {
