@@ -2,10 +2,14 @@
   <el-container class="app-container">
     <el-header class="app-header">
       <div class="header-content">
-        <h1 class="title" @click="goHome">藏书印管理系统</h1>
+        <h1 class="title" @click="goHome">印章外借登记系统</h1>
         <div class="nav-right">
           <el-radio-group v-model="activeTab" size="default" @change="handleTabChange">
-            <el-radio-button value="list">
+            <el-radio-button value="borrow">
+              <el-icon><Document /></el-icon>
+              <span>外借登记</span>
+            </el-radio-button>
+            <el-radio-button value="stamps">
               <el-icon><List /></el-icon>
               <span>印章列表</span>
             </el-radio-button>
@@ -16,7 +20,7 @@
           </el-radio-group>
           <el-button type="primary" @click="goCreate">
             <el-icon><Plus /></el-icon>
-            <span>新增印章</span>
+            <span>{{ activeTab === 'borrow' ? '登记外借' : '新增印章' }}</span>
           </el-button>
         </div>
       </div>
@@ -30,35 +34,47 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { List, DataAnalysis, Plus } from '@element-plus/icons-vue';
+import { Document, List, DataAnalysis, Plus } from '@element-plus/icons-vue';
 
 const router = useRouter();
 const route = useRoute();
 
-const activeTab = ref('list');
+const activeTab = ref('borrow');
 
 watch(
   () => route.path,
   (path) => {
-    activeTab.value = path === '/statistics' ? 'statistics' : 'list';
+    if (path.startsWith('/borrow-records')) {
+      activeTab.value = 'borrow';
+    } else if (path === '/statistics') {
+      activeTab.value = 'statistics';
+    } else {
+      activeTab.value = 'stamps';
+    }
   },
   { immediate: true }
 );
 
 function handleTabChange(value) {
-  if (value === 'statistics') {
+  if (value === 'borrow') {
+    router.push('/borrow-records');
+  } else if (value === 'statistics') {
     router.push('/statistics');
   } else {
-    router.push('/');
+    router.push('/stamps');
   }
 }
 
 function goHome() {
-  router.push('/');
+  router.push('/borrow-records');
 }
 
 function goCreate() {
-  router.push('/stamps/new');
+  if (activeTab.value === 'borrow') {
+    router.push('/borrow-records/new');
+  } else {
+    router.push('/stamps/new');
+  }
 }
 </script>
 

@@ -4,6 +4,7 @@ const { initDb } = require('./db');
 const recordsRouter = require('./routes/records');
 const stampsRouter = require('./routes/stamps');
 const statisticsRouter = require('./routes/statistics');
+const borrowRecordsRouter = require('./routes/borrowRecords');
 
 const app = express();
 const PORT = 5000;
@@ -18,6 +19,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/records', recordsRouter);
 app.use('/api/stamps', stampsRouter);
 app.use('/api/statistics', statisticsRouter);
+app.use('/api/borrow-records', borrowRecordsRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);
