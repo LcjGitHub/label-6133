@@ -1,36 +1,44 @@
 <template>
-  <div class="record-list">
+  <div class="material-list">
     <div class="page-header">
-      <h2>钤印日志</h2>
-      <span class="count">共 {{ recordStore.records.length }} 条记录</span>
+      <h2>印材图鉴</h2>
+      <span class="count">共 {{ recordStore.records.length }} 种印材</span>
     </div>
 
-    <el-table
-      v-loading="recordStore.loading"
-      :data="recordStore.records"
-      stripe
-      style="width: 100%"
-      empty-text="暂无钤印记录"
-    >
-      <el-table-column prop="id" label="编号" width="70" align="center" />
-      <el-table-column prop="seal_id" label="印章编号" width="120">
-        <template #default="{ row }">
-          <el-tag size="small" type="primary">{{ row.seal_id }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="book_title" label="书名" min-width="160" />
-      <el-table-column prop="author" label="作者" width="140" />
-      <el-table-column prop="page_number" label="页码" width="90" align="center" />
-      <el-table-column prop="stamp_date" label="钤印日期" width="130" align="center" />
-      <el-table-column prop="remark" label="备注" min-width="180" show-overflow-tooltip />
-      <el-table-column label="操作" width="220" fixed="right" align="center">
-        <template #default="{ row }">
-          <el-button size="small" @click="goDetail(row.id)">详情</el-button>
-          <el-button size="small" type="primary" @click="goEdit(row.id)">编辑</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div v-loading="recordStore.loading" class="card-grid">
+      <el-card
+        v-for="item in recordStore.records"
+        :key="item.id"
+        class="material-card"
+        shadow="hover"
+        @click="goDetail(item.id)"
+      >
+        <div class="card-image">
+          <img :src="item.image_url" :alt="item.name" />
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">{{ item.name }}</h3>
+          <div class="card-info">
+            <span class="info-item">
+              <el-icon><Location /></el-icon>
+              {{ item.origin }}
+            </span>
+            <span class="info-item">
+              <el-icon><TrendCharts /></el-icon>
+              {{ item.hardness.split('，')[0] }}
+            </span>
+          </div>
+          <p class="card-desc">{{ item.description.slice(0, 60) }}...</p>
+          <div class="card-actions" @click.stop>
+            <el-button size="small" type="primary" @click="goDetail(item.id)">查看详情</el-button>
+            <el-button size="small" @click="goEdit(item.id)">编辑</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(item)">删除</el-button>
+          </div>
+        </div>
+      </el-card>
+
+      <el-empty v-if="!recordStore.loading && recordStore.records.length === 0" description="暂无印材" />
+    </div>
   </div>
 </template>
 
@@ -38,6 +46,7 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { Location, TrendCharts } from '@element-plus/icons-vue';
 import { useRecordStore } from '../stores/records';
 
 const router = useRouter();
@@ -58,7 +67,7 @@ function goEdit(id) {
 async function handleDelete(row) {
   try {
     await ElMessageBox.confirm(
-      `确定删除《${row.book_title}》的钤印记录吗？此操作不可恢复。`,
+      `确定删除「${row.name}」吗？此操作不可恢复。`,
       '删除确认',
       { type: 'warning', confirmButtonText: '删除', cancelButtonText: '取消' }
     );
@@ -75,7 +84,7 @@ async function handleDelete(row) {
   display: flex;
   align-items: baseline;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .page-header h2 {
@@ -86,5 +95,82 @@ async function handleDelete(row) {
 .count {
   color: #909399;
   font-size: 14px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.material-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.material-card:hover {
+  transform: translateY(-4px);
+}
+
+.card-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: #f5f7fa;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+  margin: 0 0 12px 0;
+}
+
+.card-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #606266;
+}
+
+.info-item .el-icon {
+  color: #409eff;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: #606266;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+  flex: 1;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
 }
 </style>

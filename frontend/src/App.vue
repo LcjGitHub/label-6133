@@ -2,8 +2,8 @@
   <el-container class="app-container">
     <el-header class="app-header">
       <div class="header-content">
-        <h1 class="title" @click="goHome">藏书印钤印日志</h1>
-        <el-button type="primary" @click="goCreate">新增记录</el-button>
+        <h1 class="title" @click="goHome">印材图鉴</h1>
+        <el-button type="primary" @click="goCreate">新增印材</el-button>
       </div>
     </el-header>
     <el-main>

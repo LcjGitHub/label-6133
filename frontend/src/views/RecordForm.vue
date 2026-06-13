@@ -1,8 +1,8 @@
 <template>
-  <div class="record-form">
+  <div class="material-form">
     <div class="page-header">
       <el-button :icon="ArrowLeft" @click="goBack">返回</el-button>
-      <h2>{{ isCreate ? '新增钤印记录' : '编辑钤印记录' }}</h2>
+      <h2>{{ isCreate ? '新增印材' : '编辑印材' }}</h2>
     </div>
 
     <el-card class="form-card" v-loading="formLoading">
@@ -10,47 +10,50 @@
         ref="formRef"
         :model="form"
         :rules="rules"
-        label-width="100px"
-        style="max-width: 640px"
+        label-width="120px"
+        style="max-width: 720px"
       >
-        <el-form-item label="印章编号" prop="seal_id">
-          <el-input v-model="form.seal_id" placeholder="如：SEAL-001" maxlength="32" />
+        <el-form-item label="印材名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入印材名称，如：寿山石" maxlength="64" />
         </el-form-item>
-        <el-form-item label="书名" prop="book_title">
-          <el-input v-model="form.book_title" placeholder="请输入书名" maxlength="128" />
+        <el-form-item label="产地" prop="origin">
+          <el-input v-model="form.origin" placeholder="请输入产地，如：福建省福州市寿山乡" maxlength="128" />
         </el-form-item>
-        <el-form-item label="作者" prop="author">
-          <el-input v-model="form.author" placeholder="请输入作者" maxlength="64" />
-        </el-form-item>
-        <el-form-item label="钤印页码" prop="page_number">
-          <el-input-number
-            v-model="form.page_number"
-            :min="1"
-            :max="9999"
-            :step="1"
-            :precision="0"
-            controls-position="right"
-            placeholder="请输入页码"
-          />
-        </el-form-item>
-        <el-form-item label="钤印日期" prop="stamp_date">
-          <el-date-picker
-            v-model="form.stamp_date"
-            type="date"
-            placeholder="选择日期"
-            value-format="YYYY-MM-DD"
-            style="width: 100%"
-          />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
+        <el-form-item label="硬度描述" prop="hardness">
           <el-input
-            v-model="form.remark"
+            v-model="form.hardness"
             type="textarea"
-            :rows="3"
-            placeholder="简短备注（选填）"
+            :rows="2"
+            placeholder="请输入硬度描述，如：摩氏硬度2-3，质地温润细腻"
             maxlength="256"
+          />
+        </el-form-item>
+        <el-form-item label="参考颜色" prop="color">
+          <el-input
+            v-model="form.color"
+            type="textarea"
+            :rows="2"
+            placeholder="请输入参考颜色描述，如：色彩丰富，有红、黄、白、黑、灰、绿等色"
+            maxlength="256"
+          />
+        </el-form-item>
+        <el-form-item label="简介文字" prop="description">
+          <el-input
+            v-model="form.description"
+            type="textarea"
+            :rows="5"
+            placeholder="请输入印材的详细介绍文字"
+            maxlength="1000"
             show-word-limit
           />
+        </el-form-item>
+        <el-form-item label="示意图片链接" prop="image_url">
+          <el-input v-model="form.image_url" placeholder="请输入图片URL链接" maxlength="500" />
+        </el-form-item>
+        <el-form-item v-if="form.image_url" label="图片预览">
+          <div class="image-preview">
+            <img :src="form.image_url" alt="预览图" @error="imageError = true" />
+          </div>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="submitting" @click="handleSubmit">
@@ -87,25 +90,24 @@ const recordStore = useRecordStore();
 const submitting = ref(false);
 const formLoading = ref(false);
 const formRef = ref(null);
+const imageError = ref(false);
 
 const form = ref({
-  seal_id: '',
-  book_title: '',
-  author: '',
-  page_number: 1,
-  stamp_date: '',
-  remark: ''
+  name: '',
+  origin: '',
+  hardness: '',
+  color: '',
+  description: '',
+  image_url: ''
 });
 
 const rules = {
-  seal_id: [{ required: true, message: '请输入印章编号', trigger: 'blur' }],
-  book_title: [{ required: true, message: '请输入书名', trigger: 'blur' }],
-  author: [{ required: true, message: '请输入作者', trigger: 'blur' }],
-  page_number: [
-    { required: true, message: '请输入页码', trigger: 'blur' },
-    { type: 'number', min: 1, message: '页码必须大于 0', trigger: 'blur' }
-  ],
-  stamp_date: [{ required: true, message: '请选择钤印日期', trigger: 'change' }]
+  name: [{ required: true, message: '请输入印材名称', trigger: 'blur' }],
+  origin: [{ required: true, message: '请输入产地', trigger: 'blur' }],
+  hardness: [{ required: true, message: '请输入硬度描述', trigger: 'blur' }],
+  color: [{ required: true, message: '请输入参考颜色', trigger: 'blur' }],
+  description: [{ required: true, message: '请输入简介文字', trigger: 'blur' }],
+  image_url: [{ required: true, message: '请输入示意图片链接', trigger: 'blur' }]
 };
 
 const isCreate = computed(() => props.mode === 'create');
@@ -117,15 +119,15 @@ onMounted(async () => {
   try {
     const data = await recordStore.getRecord(props.id);
     form.value = {
-      seal_id: data.seal_id,
-      book_title: data.book_title,
-      author: data.author,
-      page_number: data.page_number,
-      stamp_date: data.stamp_date,
-      remark: data.remark || ''
+      name: data.name,
+      origin: data.origin,
+      hardness: data.hardness,
+      color: data.color,
+      description: data.description,
+      image_url: data.image_url
     };
   } catch {
-    ElMessage.error('加载失败，记录可能不存在');
+    ElMessage.error('加载失败，印材可能不存在');
     router.push('/');
   } finally {
     formLoading.value = false;
@@ -179,5 +181,20 @@ async function handleSubmit() {
 
 .form-card {
   padding: 8px;
+}
+
+.image-preview {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e4e7ed;
+  background: #f5f7fa;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>

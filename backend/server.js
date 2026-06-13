@@ -23,7 +23,7 @@ app.use((err, req, res, next) => {
 async function start() {
   await initDb();
   app.listen(PORT, () => {
-    console.log(`藏书印钤印日志 API 运行于 http://localhost:${PORT}`);
+    console.log(`印材图鉴 API 运行于 http://localhost:${PORT}`);
   });
 }
 

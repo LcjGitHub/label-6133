@@ -49,14 +49,14 @@ function runAndGetLastId(sql, params = []) {
 
 function initSchema() {
   db.run(`
-    CREATE TABLE IF NOT EXISTS stamp_records (
+    CREATE TABLE IF NOT EXISTS stamp_materials (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      seal_id TEXT NOT NULL,
-      book_title TEXT NOT NULL,
-      author TEXT NOT NULL,
-      page_number INTEGER NOT NULL,
-      stamp_date TEXT NOT NULL,
-      remark TEXT DEFAULT '',
+      name TEXT NOT NULL,
+      origin TEXT NOT NULL,
+      hardness TEXT NOT NULL,
+      color TEXT NOT NULL,
+      description TEXT NOT NULL,
+      image_url TEXT NOT NULL,
       created_at TEXT DEFAULT (datetime('now', 'localtime')),
       updated_at TEXT DEFAULT (datetime('now', 'localtime'))
     )
@@ -65,59 +65,59 @@ function initSchema() {
 }
 
 function seedData() {
-  const { total } = queryOne('SELECT COUNT(*) AS total FROM stamp_records');
+  const { total } = queryOne('SELECT COUNT(*) AS total FROM stamp_materials');
   if (total > 0) {
     return;
   }
 
   const seeds = [
     {
-      seal_id: 'SEAL-001',
-      book_title: '红楼梦',
-      author: '曹雪芹',
-      page_number: 37,
-      stamp_date: '2024-03-15',
-      remark: '钤于第三回扉页'
+      name: '寿山石',
+      origin: '福建省福州市寿山乡',
+      hardness: '摩氏硬度2-3，质地温润细腻',
+      color: '色彩丰富，有红、黄、白、黑、灰、绿等色',
+      description: '寿山石是中国传统四大印章石之首，被誉为"石中之王"。其质地温润细腻，色彩斑斓，纹理奇特，尤以田黄、芙蓉、鸡血等品种最为珍贵。寿山石印章文化源远流长，是篆刻艺术的最佳载体之一。',
+      image_url: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=shoushan%20stone%20seal%20material%20chinese%20traditional%20carving%20beautiful&image_size=square_hd'
     },
     {
-      seal_id: 'SEAL-002',
-      book_title: '百年孤独',
-      author: '加西亚·马尔克斯',
-      page_number: 128,
-      stamp_date: '2024-05-02',
-      remark: '重读时标记精彩段落'
+      name: '青田石',
+      origin: '浙江省青田县',
+      hardness: '摩氏硬度1.5-2，质地细腻脆爽',
+      color: '以青色为主，兼有黄、白、绿、蓝等色',
+      description: '青田石是中国四大印章石之一，以其质地细腻、脆爽适中、易于镌刻而闻名于世。青田石颜色丰富，其中以"封门青"最为珍贵，色如碧玉，温润细腻，是篆刻家最喜爱的印材之一。',
+      image_url: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=qingtian%20stone%20seal%20material%20green%20jade%20chinese%20traditional&image_size=square_hd'
     },
     {
-      seal_id: 'SEAL-001',
-      book_title: '追风筝的人',
-      author: '卡勒德·胡赛尼',
-      page_number: 1,
-      stamp_date: '2024-06-18',
-      remark: '藏书章钤于扉页'
+      name: '昌化石',
+      origin: '浙江省临安市昌化镇',
+      hardness: '摩氏硬度2-3，质地坚韧细腻',
+      color: '多为灰白色，以含有鲜红色辰砂的鸡血石最为名贵',
+      description: '昌化石是中国四大印章石之一，尤以"鸡血石"闻名天下。鸡血石因含有鲜红色的辰砂（硫化汞）而得名，其红如鸡血，艳丽夺目，被誉为"印石皇后"。昌化石质地坚韧，适合镌刻，是收藏级印章的首选材料。',
+      image_url: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=changhua%20stone%20bloodstone%20seal%20material%20red%20chinese%20traditional&image_size=square_hd'
     },
     {
-      seal_id: 'SEAL-003',
-      book_title: '围城',
-      author: '钱钟书',
-      page_number: 89,
-      stamp_date: '2024-09-07',
-      remark: '经典语句处钤印留念'
+      name: '巴林石',
+      origin: '内蒙古自治区赤峰市巴林右旗',
+      hardness: '摩氏硬度2-3，质地温润细腻',
+      color: '色彩丰富，有红、黄、蓝、绿、紫、白、黑等多种颜色',
+      description: '巴林石是中国四大印章石之一，产自内蒙古草原。其质地温润细腻，色彩绚丽多姿，尤以"巴林鸡血"和"福黄石"最为珍贵。巴林石品种繁多，纹理奇特，是篆刻和收藏的极佳选择。',
+      image_url: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=balin%20stone%20seal%20material%20colorful%20chinese%20inner%20mongolia&image_size=square_hd'
     },
     {
-      seal_id: 'SEAL-002',
-      book_title: '活着',
-      author: '余华',
-      page_number: 156,
-      stamp_date: '2025-01-22',
-      remark: '深夜读完，感慨良多'
+      name: '和田玉',
+      origin: '新疆和田地区',
+      hardness: '摩氏硬度6-6.5，质地致密坚硬',
+      color: '以白色为主，兼有青、黄、碧、墨等色',
+      description: '和田玉是中国四大名玉之首，被誉为"玉中之王"。其质地致密细腻，温润如脂，尤以羊脂白玉最为珍贵。和田玉印章高贵典雅，质地坚硬耐磨，能够保存千年，是权力和身份的象征。',
+      image_url: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hetian%20jade%20seal%20material%20white%20nephrite%20chinese%20luxury&image_size=square_hd'
     }
   ];
 
   for (const item of seeds) {
     db.run(
-      `INSERT INTO stamp_records (seal_id, book_title, author, page_number, stamp_date, remark)
+      `INSERT INTO stamp_materials (name, origin, hardness, color, description, image_url)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [item.seal_id, item.book_title, item.author, item.page_number, item.stamp_date, item.remark]
+      [item.name, item.origin, item.hardness, item.color, item.description, item.image_url]
     );
   }
   persist();
