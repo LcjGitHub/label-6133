@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { initDb } = require('./db');
 const recordsRouter = require('./routes/records');
+const stampsRouter = require('./routes/stamps');
 const statisticsRouter = require('./routes/statistics');
 
 const app = express();
@@ -15,6 +16,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/records', recordsRouter);
+app.use('/api/stamps', stampsRouter);
 app.use('/api/statistics', statisticsRouter);
 
 app.use((err, req, res, next) => {

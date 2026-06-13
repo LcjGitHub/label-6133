@@ -4,9 +4,23 @@
       <h2>藏书印统计看板</h2>
     </div>
 
-    <div v-loading="recordStore.statisticsLoading" class="stats-content">
+    <div v-loading="stampStore.statisticsLoading" class="stats-content">
       <el-empty
-        v-if="!recordStore.statisticsLoading && !hasData"
+        v-if="!stampStore.statisticsLoading && loadError"
+        description="数据加载失败"
+        :image-size="120"
+      >
+        <template #description>
+          <p>统计数据加载失败，请检查网络连接后重试</p>
+          <el-button type="primary" @click="loadData" style="margin-top: 12px;">
+            <el-icon><Refresh /></el-icon>
+            重新加载
+          </el-button>
+        </template>
+      </el-empty>
+
+      <el-empty
+        v-else-if="!stampStore.statisticsLoading && !hasData"
         description="暂无印章数据"
         :image-size="120"
       >
@@ -24,7 +38,7 @@
               </div>
               <div class="card-info">
                 <div class="card-label">印章总数</div>
-                <div class="card-value">{{ recordStore.statistics?.total || 0 }}</div>
+                <div class="card-value">{{ stampStore.statistics?.total || 0 }}</div>
               </div>
             </el-card>
           </el-col>
@@ -35,7 +49,7 @@
               </div>
               <div class="card-info">
                 <div class="card-label">材质种类</div>
-                <div class="card-value">{{ recordStore.statistics?.byMaterial?.length || 0 }}</div>
+                <div class="card-value">{{ stampStore.statistics?.byMaterial?.length || 0 }}</div>
               </div>
             </el-card>
           </el-col>
@@ -45,8 +59,11 @@
                 <el-icon :size="40"><Calendar /></el-icon>
               </div>
               <div class="card-info">
-                <div class="card-label">刻制年份跨度</div>
-                <div class="card-value">{{ yearSpan }}</div>
+                <div class="card-label">年份数量</div>
+                <div class="card-value">{{ stampStore.statistics?.byYear?.length || 0 }}</div>
+                <div class="card-subtitle">
+                  <span v-if="latestYear">最新：{{ latestYear }}年 {{ latestYearCount }} 方</span>
+                </div>
               </div>
             </el-card>
           </el-col>
@@ -118,8 +135,8 @@ import {
 } from 'echarts/components';
 import VChart from 'vue-echarts';
 import { ElMessage } from 'element-plus';
-import { Collection, Box, Calendar } from '@element-plus/icons-vue';
-import { useRecordStore } from '../stores/records';
+import { Collection, Box, Calendar, Refresh } from '@element-plus/icons-vue';
+import { useStampStore } from '../stores/stamps';
 
 use([
   CanvasRenderer,
@@ -131,7 +148,7 @@ use([
   GridComponent
 ]);
 
-const recordStore = useRecordStore();
+const stampStore = useStampStore();
 const loadError = ref(false);
 
 const colorPalette = [
@@ -146,20 +163,32 @@ const colorPalette = [
 ];
 
 const hasData = computed(() => {
-  const stats = recordStore.statistics;
+  const stats = stampStore.statistics;
   return stats && (stats.total > 0 || stats.byMaterial?.length > 0 || stats.byYear?.length > 0);
 });
 
 const hasMaterialData = computed(() => {
-  return recordStore.statistics?.byMaterial?.length > 0;
+  return stampStore.statistics?.byMaterial?.length > 0;
 });
 
 const hasYearData = computed(() => {
-  return recordStore.statistics?.byYear?.length > 0;
+  return stampStore.statistics?.byYear?.length > 0;
+});
+
+const latestYear = computed(() => {
+  const data = stampStore.statistics?.byYear || [];
+  if (data.length === 0) return null;
+  return data[data.length - 1].name;
+});
+
+const latestYearCount = computed(() => {
+  const data = stampStore.statistics?.byYear || [];
+  if (data.length === 0) return 0;
+  return data[data.length - 1].value;
 });
 
 const materialChartOption = computed(() => {
-  const data = recordStore.statistics?.byMaterial || [];
+  const data = stampStore.statistics?.byMaterial || [];
   return {
     tooltip: {
       trigger: 'item',
@@ -210,7 +239,7 @@ const materialChartOption = computed(() => {
 });
 
 const yearChartOption = computed(() => {
-  const data = recordStore.statistics?.byYear || [];
+  const data = stampStore.statistics?.byYear || [];
   return {
     tooltip: {
       trigger: 'axis',
@@ -262,17 +291,10 @@ const yearChartOption = computed(() => {
   };
 });
 
-const yearSpan = computed(() => {
-  const data = recordStore.statistics?.byYear || [];
-  if (data.length === 0) return '-';
-  if (data.length === 1) return `${data[0].name}年`;
-  return `${data[0].name} - ${data[data.length - 1].name}年`;
-});
-
 async function loadData() {
   try {
     loadError.value = false;
-    await recordStore.loadStatistics();
+    await stampStore.loadStatistics();
   } catch (err) {
     loadError.value = true;
     ElMessage.error('统计数据加载失败，请稍后重试');
@@ -349,6 +371,12 @@ onMounted(() => {
   line-height: 1.2;
 }
 
+.card-subtitle {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 4px;
+}
+
 .charts-row {
   margin-bottom: 24px;
 }
@@ -361,6 +389,9 @@ onMounted(() => {
   font-size: 16px;
   font-weight: 600;
   color: #303133;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .chart-container {

@@ -7,7 +7,7 @@
           <el-radio-group v-model="activeTab" size="default" @change="handleTabChange">
             <el-radio-button value="list">
               <el-icon><List /></el-icon>
-              <span>印材列表</span>
+              <span>印章列表</span>
             </el-radio-button>
             <el-radio-button value="statistics">
               <el-icon><DataAnalysis /></el-icon>
@@ -16,7 +16,7 @@
           </el-radio-group>
           <el-button type="primary" @click="goCreate">
             <el-icon><Plus /></el-icon>
-            <span>新增印材</span>
+            <span>新增印章</span>
           </el-button>
         </div>
       </div>
@@ -58,7 +58,7 @@ function goHome() {
 }
 
 function goCreate() {
-  router.push('/records/new');
+  router.push('/stamps/new');
 }
 </script>
 

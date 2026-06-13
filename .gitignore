@@ -132,6 +132,5 @@ tmp/
 
 # App data
 history_snapshots.json
-data/*.db
-data/stamp_materials.db
-data/stamp_records.db
+backend/data/*
+!backend/data/.gitkeep

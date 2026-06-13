@@ -22,19 +22,12 @@
           />
         </el-form-item>
         <el-form-item label="材质" prop="material">
-          <el-select
-            v-model="form.material"
-            placeholder="请选择材质"
-            filterable
-            allow-create
-            default-first-option
-            style="width: 100%"
-          >
+          <el-select v-model="form.material" placeholder="请选择材质" style="width: 100%">
             <el-option
               v-for="item in materialOptions"
-              :key="item"
-              :label="item"
-              :value="item"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
             />
           </el-select>
         </el-form-item>
@@ -42,9 +35,8 @@
           <el-date-picker
             v-model="form.carve_date"
             type="date"
-            placeholder="选择刻制日期"
+            placeholder="请选择刻制日期"
             value-format="YYYY-MM-DD"
-            format="YYYY-MM-DD"
             style="width: 100%"
           />
         </el-form-item>
@@ -64,7 +56,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ArrowLeft } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-import { useStampStore } from '../stores/stamps';
+import { useRecordStore } from '../stores/records';
 
 const props = defineProps({
   mode: {
@@ -78,13 +70,19 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const stampStore = useStampStore();
+const recordStore = useRecordStore();
 
 const submitting = ref(false);
 const formLoading = ref(false);
 const formRef = ref(null);
 
-const materialOptions = ['寿山石', '青田石', '昌化石', '巴林石', '和田玉', '其他'];
+const materialOptions = [
+  { label: '寿山石', value: '寿山石' },
+  { label: '青田石', value: '青田石' },
+  { label: '昌化石', value: '昌化石' },
+  { label: '巴林石', value: '巴林石' },
+  { label: '和田玉', value: '和田玉' }
+];
 
 const form = ref({
   inscription: '',
@@ -94,7 +92,7 @@ const form = ref({
 
 const rules = {
   inscription: [{ required: true, message: '请输入印文', trigger: 'blur' }],
-  material: [{ required: true, message: '请选择或输入材质', trigger: 'change' }],
+  material: [{ required: true, message: '请选择材质', trigger: 'change' }],
   carve_date: [{ required: true, message: '请选择刻制日期', trigger: 'change' }]
 };
 
@@ -105,7 +103,7 @@ onMounted(async () => {
 
   formLoading.value = true;
   try {
-    const data = await stampStore.getStamp(props.id);
+    const data = await recordStore.getStamp(props.id);
     form.value = {
       inscription: data.inscription,
       material: data.material,
@@ -120,7 +118,11 @@ onMounted(async () => {
 });
 
 function goBack() {
-  router.push('/');
+  if (isCreate.value) {
+    router.push('/');
+  } else {
+    router.push(`/stamps/${props.id}`);
+  }
 }
 
 async function handleSubmit() {
@@ -130,13 +132,14 @@ async function handleSubmit() {
   submitting.value = true;
   try {
     if (isCreate.value) {
-      await stampStore.addStamp(form.value);
+      const created = await recordStore.addStamp(form.value);
       ElMessage.success('创建成功');
+      router.push(`/stamps/${created.id}`);
     } else {
-      await stampStore.editStamp(props.id, form.value);
+      await recordStore.editStamp(props.id, form.value);
       ElMessage.success('保存成功');
+      router.push(`/stamps/${props.id}`);
     }
-    router.push('/');
   } catch (err) {
     const msg = err.response?.data?.message || '操作失败';
     ElMessage.error(msg);
@@ -157,6 +160,7 @@ async function handleSubmit() {
 .page-header h2 {
   font-size: 20px;
   color: #303133;
+  margin: 0;
 }
 
 .form-card {

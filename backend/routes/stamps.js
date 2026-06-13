@@ -9,21 +9,20 @@ const fieldLabels = {
   carve_date: '刻制日期'
 };
 
-const materialOptions = ['寿山石', '青田石', '昌化石', '巴林石', '和田玉'];
-
-function validateRecordBody(body) {
+function validateStampBody(body) {
   const required = ['inscription', 'material', 'carve_date'];
   for (const field of required) {
     if (body[field] === undefined || body[field] === null || String(body[field]).trim() === '') {
       return `${fieldLabels[field]}不能为空`;
     }
   }
-  if (!materialOptions.includes(body.material)) {
-    return `材质必须是以下之一：${materialOptions.join('、')}`;
-  }
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
   if (!dateRegex.test(body.carve_date)) {
-    return '刻制日期格式必须为 YYYY-MM-DD';
+    return '刻制日期格式不正确，请使用 YYYY-MM-DD 格式';
+  }
+  const date = new Date(body.carve_date);
+  if (isNaN(date.getTime())) {
+    return '刻制日期不是有效日期';
   }
   return null;
 }
@@ -31,10 +30,6 @@ function validateRecordBody(body) {
 router.get('/', (req, res) => {
   const records = queryAll('SELECT * FROM stamps ORDER BY carve_date DESC, id DESC');
   res.json({ data: records });
-});
-
-router.get('/materials', (req, res) => {
-  res.json({ data: materialOptions });
 });
 
 router.get('/:id', (req, res) => {
@@ -46,7 +41,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const error = validateRecordBody(req.body);
+  const error = validateStampBody(req.body);
   if (error) {
     return res.status(400).json({ message: error });
   }
@@ -68,7 +63,7 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ message: '印章不存在' });
   }
 
-  const error = validateRecordBody(req.body);
+  const error = validateStampBody(req.body);
   if (error) {
     return res.status(400).json({ message: error });
   }
@@ -76,8 +71,7 @@ router.put('/:id', (req, res) => {
   const { inscription, material, carve_date } = req.body;
   run(
     `UPDATE stamps
-     SET inscription = ?, material = ?, carve_date = ?,
-         updated_at = datetime('now', 'localtime')
+     SET inscription = ?, material = ?, carve_date = ?, updated_at = datetime('now', 'localtime')
      WHERE id = ?`,
     [inscription, material, carve_date, req.params.id]
   );
