@@ -5,6 +5,14 @@ const http = axios.create({
   timeout: 10000
 });
 
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API请求错误:', error.message);
+    return Promise.reject(error);
+  }
+);
+
 export function fetchRecords() {
   return http.get('/records');
 }
@@ -23,4 +31,8 @@ export function updateRecord(id, data) {
 
 export function deleteRecord(id) {
   return http.delete(`/records/${id}`);
+}
+
+export function fetchStatistics() {
+  return http.get('/statistics');
 }

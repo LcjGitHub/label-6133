@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { initDb } = require('./db');
 const recordsRouter = require('./routes/records');
+const statisticsRouter = require('./routes/statistics');
 
 const app = express();
 const PORT = 5000;
@@ -14,6 +15,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/records', recordsRouter);
+app.use('/api/statistics', statisticsRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);

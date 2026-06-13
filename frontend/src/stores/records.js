@@ -5,12 +5,15 @@ import {
   fetchRecord,
   createRecord,
   updateRecord,
-  deleteRecord
+  deleteRecord,
+  fetchStatistics
 } from '../api/records';
 
 export const useRecordStore = defineStore('records', () => {
   const records = ref([]);
   const loading = ref(false);
+  const statistics = ref(null);
+  const statisticsLoading = ref(false);
 
   async function loadRecords() {
     loading.value = true;
@@ -19,6 +22,20 @@ export const useRecordStore = defineStore('records', () => {
       records.value = res.data.data;
     } finally {
       loading.value = false;
+    }
+  }
+
+  async function loadStatistics() {
+    statisticsLoading.value = true;
+    try {
+      const res = await fetchStatistics();
+      statistics.value = res.data.data;
+      return statistics.value;
+    } catch (err) {
+      statistics.value = null;
+      throw err;
+    } finally {
+      statisticsLoading.value = false;
     }
   }
 
@@ -52,7 +69,10 @@ export const useRecordStore = defineStore('records', () => {
   return {
     records,
     loading,
+    statistics,
+    statisticsLoading,
     loadRecords,
+    loadStatistics,
     getRecord,
     addRecord,
     editRecord,

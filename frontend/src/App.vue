@@ -2,8 +2,23 @@
   <el-container class="app-container">
     <el-header class="app-header">
       <div class="header-content">
-        <h1 class="title" @click="goHome">印材图鉴</h1>
-        <el-button type="primary" @click="goCreate">新增印材</el-button>
+        <h1 class="title" @click="goHome">藏书印管理系统</h1>
+        <div class="nav-right">
+          <el-radio-group v-model="activeTab" size="default" @change="handleTabChange">
+            <el-radio-button value="list">
+              <el-icon><List /></el-icon>
+              <span>印材列表</span>
+            </el-radio-button>
+            <el-radio-button value="statistics">
+              <el-icon><DataAnalysis /></el-icon>
+              <span>统计看板</span>
+            </el-radio-button>
+          </el-radio-group>
+          <el-button type="primary" @click="goCreate">
+            <el-icon><Plus /></el-icon>
+            <span>新增印材</span>
+          </el-button>
+        </div>
       </div>
     </el-header>
     <el-main>
@@ -13,9 +28,30 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { ref, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { List, DataAnalysis, Plus } from '@element-plus/icons-vue';
 
 const router = useRouter();
+const route = useRoute();
+
+const activeTab = ref('list');
+
+watch(
+  () => route.path,
+  (path) => {
+    activeTab.value = path === '/statistics' ? 'statistics' : 'list';
+  },
+  { immediate: true }
+);
+
+function handleTabChange(value) {
+  if (value === 'statistics') {
+    router.push('/statistics');
+  } else {
+    router.push('/');
+  }
+}
 
 function goHome() {
   router.push('/');
@@ -65,6 +101,24 @@ body {
   font-weight: 600;
   color: #303133;
   cursor: pointer;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-right .el-radio-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-right .el-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .el-main {

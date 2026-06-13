@@ -61,10 +61,21 @@ function initSchema() {
       updated_at TEXT DEFAULT (datetime('now', 'localtime'))
     )
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS stamps (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      inscription TEXT NOT NULL,
+      material TEXT NOT NULL,
+      carve_date TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now', 'localtime')),
+      updated_at TEXT DEFAULT (datetime('now', 'localtime'))
+    )
+  `);
   persist();
 }
 
-function seedData() {
+function seedMaterialData() {
   const { total } = queryOne('SELECT COUNT(*) AS total FROM stamp_materials');
   if (total > 0) {
     return;
@@ -120,7 +131,57 @@ function seedData() {
       [item.name, item.origin, item.hardness, item.color, item.description, item.image_url]
     );
   }
+
   persist();
+}
+
+function seedStampData() {
+  const { total } = queryOne('SELECT COUNT(*) AS total FROM stamps');
+  if (total > 0) {
+    return;
+  }
+
+  const stampSeeds = [
+    { inscription: '书香门第', material: '寿山石', carve_date: '2020-05-12' },
+    { inscription: '宁静致远', material: '青田石', carve_date: '2020-08-23' },
+    { inscription: '厚德载物', material: '寿山石', carve_date: '2021-03-15' },
+    { inscription: '上善若水', material: '巴林石', carve_date: '2021-06-30' },
+    { inscription: '道法自然', material: '昌化石', carve_date: '2021-11-08' },
+    { inscription: '海纳百川', material: '和田玉', carve_date: '2022-01-20' },
+    { inscription: '自强不息', material: '寿山石', carve_date: '2022-04-12' },
+    { inscription: '志存高远', material: '青田石', carve_date: '2022-07-25' },
+    { inscription: '知行合一', material: '寿山石', carve_date: '2022-09-18' },
+    { inscription: '虚怀若谷', material: '巴林石', carve_date: '2023-02-14' },
+    { inscription: '温故知新', material: '昌化石', carve_date: '2023-05-06' },
+    { inscription: '业精于勤', material: '寿山石', carve_date: '2023-08-30' },
+    { inscription: '行胜于言', material: '和田玉', carve_date: '2023-12-01' },
+    { inscription: '精益求精', material: '青田石', carve_date: '2024-03-22' },
+    { inscription: '学而不厌', material: '寿山石', carve_date: '2024-06-15' },
+    { inscription: '金石为开', material: '巴林石', carve_date: '2024-09-08' },
+    { inscription: '锲而不舍', material: '寿山石', carve_date: '2024-11-27' },
+    { inscription: '书为心画', material: '昌化石', carve_date: '2025-01-19' },
+    { inscription: '翰墨飘香', material: '和田玉', carve_date: '2025-04-03' },
+    { inscription: '藏书之印', material: '寿山石', carve_date: '2025-07-22' },
+    { inscription: '百读不厌', material: '青田石', carve_date: '2025-10-11' },
+    { inscription: '开卷有益', material: '寿山石', carve_date: '2026-02-14' },
+    { inscription: '学无止境', material: '巴林石', carve_date: '2026-05-01' },
+    { inscription: '博览群书', material: '寿山石', carve_date: '2026-06-10' }
+  ];
+
+  for (const item of stampSeeds) {
+    db.run(
+      `INSERT INTO stamps (inscription, material, carve_date)
+       VALUES (?, ?, ?)`,
+      [item.inscription, item.material, item.carve_date]
+    );
+  }
+
+  persist();
+}
+
+function seedData() {
+  seedMaterialData();
+  seedStampData();
 }
 
 async function initDb() {
