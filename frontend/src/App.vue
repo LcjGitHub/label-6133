@@ -2,16 +2,20 @@
   <el-container class="app-container">
     <el-header class="app-header">
       <div class="header-content">
-        <h1 class="title" @click="goHome">印章外借登记系统</h1>
+        <h1 class="title" @click="goHome">藏书印鉴赏笔记</h1>
         <div class="nav-right">
           <el-radio-group v-model="activeTab" size="default" @change="handleTabChange">
-            <el-radio-button value="borrow">
-              <el-icon><Document /></el-icon>
-              <span>外借登记</span>
+            <el-radio-button value="notes">
+              <el-icon><EditPen /></el-icon>
+              <span>鉴赏笔记</span>
             </el-radio-button>
             <el-radio-button value="stamps">
               <el-icon><List /></el-icon>
               <span>印章列表</span>
+            </el-radio-button>
+            <el-radio-button value="borrow">
+              <el-icon><Document /></el-icon>
+              <span>外借登记</span>
             </el-radio-button>
             <el-radio-button value="statistics">
               <el-icon><DataAnalysis /></el-icon>
@@ -20,7 +24,7 @@
           </el-radio-group>
           <el-button v-if="activeTab !== 'statistics'" type="primary" @click="goCreate">
             <el-icon><Plus /></el-icon>
-            <span>{{ activeTab === 'borrow' ? '登记外借' : '新增印章' }}</span>
+            <span>{{ createButtonText }}</span>
           </el-button>
         </div>
       </div>
@@ -32,19 +36,34 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { Document, List, DataAnalysis, Plus } from '@element-plus/icons-vue';
+import { Document, List, DataAnalysis, Plus, EditPen } from '@element-plus/icons-vue';
 
 const router = useRouter();
 const route = useRoute();
 
-const activeTab = ref('borrow');
+const activeTab = ref('notes');
+
+const createButtonText = computed(() => {
+  switch (activeTab.value) {
+    case 'notes':
+      return '新建笔记';
+    case 'borrow':
+      return '登记外借';
+    case 'stamps':
+      return '新增印章';
+    default:
+      return '新建';
+  }
+});
 
 watch(
   () => route.path,
   (path) => {
-    if (path.startsWith('/borrow-records')) {
+    if (path.startsWith('/notes')) {
+      activeTab.value = 'notes';
+    } else if (path.startsWith('/borrow-records')) {
       activeTab.value = 'borrow';
     } else if (path === '/statistics') {
       activeTab.value = 'statistics';
@@ -56,7 +75,9 @@ watch(
 );
 
 function handleTabChange(value) {
-  if (value === 'borrow') {
+  if (value === 'notes') {
+    router.push('/notes');
+  } else if (value === 'borrow') {
     router.push('/borrow-records');
   } else if (value === 'statistics') {
     router.push('/statistics');
@@ -66,11 +87,13 @@ function handleTabChange(value) {
 }
 
 function goHome() {
-  router.push('/borrow-records');
+  router.push('/notes');
 }
 
 function goCreate() {
-  if (activeTab.value === 'borrow') {
+  if (activeTab.value === 'notes') {
+    router.push('/notes/new');
+  } else if (activeTab.value === 'borrow') {
     router.push('/borrow-records/new');
   } else {
     router.push('/stamps/new');

@@ -4,11 +4,14 @@ import RecordForm from '../views/RecordForm.vue';
 import Statistics from '../views/Statistics.vue';
 import BorrowList from '../views/BorrowList.vue';
 import BorrowForm from '../views/BorrowForm.vue';
+import NoteList from '../views/NoteList.vue';
+import NoteDetail from '../views/NoteDetail.vue';
+import NoteForm from '../views/NoteForm.vue';
 
 const routes = [
   {
     path: '/',
-    redirect: '/borrow-records'
+    redirect: '/notes'
   },
   {
     path: '/stamps',
@@ -55,6 +58,33 @@ const routes = [
     component: BorrowForm,
     props: (route) => ({ mode: 'edit', id: Number(route.params.id) }),
     meta: { title: '编辑外借记录', activeTab: 'borrow' }
+  },
+  {
+    path: '/notes',
+    name: 'NoteList',
+    component: NoteList,
+    meta: { title: '鉴赏笔记', activeTab: 'notes' }
+  },
+  {
+    path: '/notes/new',
+    name: 'NoteCreate',
+    component: NoteForm,
+    props: { mode: 'create' },
+    meta: { title: '新建笔记', activeTab: 'notes' }
+  },
+  {
+    path: '/notes/:id',
+    name: 'NoteDetail',
+    component: NoteDetail,
+    props: (route) => ({ id: Number(route.params.id) }),
+    meta: { title: '笔记详情', activeTab: 'notes' }
+  },
+  {
+    path: '/notes/:id/edit',
+    name: 'NoteEdit',
+    component: NoteForm,
+    props: (route) => ({ mode: 'edit', id: Number(route.params.id) }),
+    meta: { title: '编辑笔记', activeTab: 'notes' }
   }
 ];
 
@@ -65,7 +95,7 @@ const router = createRouter({
 
 router.beforeEach((to, _from, next) => {
   if (to.meta?.title) {
-    document.title = `${to.meta.title} - 印章外借登记系统`;
+    document.title = `${to.meta.title} - 藏书印鉴赏笔记`;
   }
   next();
 });

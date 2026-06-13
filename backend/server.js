@@ -5,6 +5,7 @@ const recordsRouter = require('./routes/records');
 const stampsRouter = require('./routes/stamps');
 const statisticsRouter = require('./routes/statistics');
 const borrowRecordsRouter = require('./routes/borrowRecords');
+const notesRouter = require('./routes/notes');
 
 const app = express();
 const PORT = 5000;
@@ -20,6 +21,7 @@ app.use('/api/records', recordsRouter);
 app.use('/api/stamps', stampsRouter);
 app.use('/api/statistics', statisticsRouter);
 app.use('/api/borrow-records', borrowRecordsRouter);
+app.use('/api/notes', notesRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);
