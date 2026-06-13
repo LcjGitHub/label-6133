@@ -1,7 +1,7 @@
 {
-  "name": "seal-collection-backend",
+  "name": "stamp-record-backend",
   "version": "1.0.0",
-  "description": "个人藏书印管理 API",
+  "description": "藏书印钤印日志 API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

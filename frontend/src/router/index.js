@@ -1,29 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import SealList from '../views/SealList.vue';
-import SealDetail from '../views/SealDetail.vue';
+import RecordList from '../views/RecordList.vue';
+import RecordDetail from '../views/RecordDetail.vue';
+import RecordForm from '../views/RecordForm.vue';
 
 const routes = [
   {
     path: '/',
-    name: 'SealList',
-    component: SealList
+    name: 'RecordList',
+    component: RecordList
   },
   {
-    path: '/seals/new',
-    name: 'SealCreate',
-    component: SealDetail,
+    path: '/records/new',
+    name: 'RecordCreate',
+    component: RecordForm,
     props: { mode: 'create' }
   },
   {
-    path: '/seals/:id',
-    name: 'SealDetail',
-    component: SealDetail,
-    props: (route) => ({ mode: 'view', id: Number(route.params.id) })
+    path: '/records/:id',
+    name: 'RecordDetail',
+    component: RecordDetail,
+    props: (route) => ({ id: Number(route.params.id) })
   },
   {
-    path: '/seals/:id/edit',
-    name: 'SealEdit',
-    component: SealDetail,
+    path: '/records/:id/edit',
+    name: 'RecordEdit',
+    component: RecordForm,
     props: (route) => ({ mode: 'edit', id: Number(route.params.id) })
   }
 ];

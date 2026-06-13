@@ -2,8 +2,8 @@
   <el-container class="app-container">
     <el-header class="app-header">
       <div class="header-content">
-        <h1 class="title" @click="goHome">个人藏书印管理</h1>
-        <el-button type="primary" @click="goCreate">新增印章</el-button>
+        <h1 class="title" @click="goHome">藏书印钤印日志</h1>
+        <el-button type="primary" @click="goCreate">新增记录</el-button>
       </div>
     </el-header>
     <el-main>
@@ -17,18 +17,12 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-/**
- * 返回首页
- */
 function goHome() {
   router.push('/');
 }
 
-/**
- * 跳转新增页面
- */
 function goCreate() {
-  router.push('/seals/new');
+  router.push('/records/new');
 }
 </script>
 
