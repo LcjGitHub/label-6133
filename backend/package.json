@@ -1,7 +1,7 @@
 {
-  "name": "stamp-record-backend",
+  "name": "stamp-material-backend",
   "version": "1.0.0",
-  "description": "藏书印钤印日志 API",
+  "description": "印材图鉴 API - 印章材料数据接口服务",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

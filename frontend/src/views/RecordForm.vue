@@ -52,7 +52,16 @@
         </el-form-item>
         <el-form-item v-if="form.image_url" label="图片预览">
           <div class="image-preview">
-            <img :src="form.image_url" alt="预览图" @error="imageError = true" />
+            <img
+              v-if="!imageError"
+              :src="form.image_url"
+              alt="预览图"
+              @error="handleImageError"
+            />
+            <div v-else class="image-placeholder">
+              <el-icon class="placeholder-icon"><Picture /></el-icon>
+              <span>图片加载失败</span>
+            </div>
           </div>
         </el-form-item>
         <el-form-item>
@@ -67,9 +76,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { ArrowLeft } from '@element-plus/icons-vue';
+import { ArrowLeft, Picture } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { useRecordStore } from '../stores/records';
 
@@ -112,6 +121,13 @@ const rules = {
 
 const isCreate = computed(() => props.mode === 'create');
 
+watch(
+  () => form.value.image_url,
+  () => {
+    imageError.value = false;
+  }
+);
+
 onMounted(async () => {
   if (props.mode === 'create') return;
 
@@ -133,6 +149,10 @@ onMounted(async () => {
     formLoading.value = false;
   }
 });
+
+function handleImageError() {
+  imageError.value = true;
+}
 
 function goBack() {
   if (isCreate.value) {
@@ -196,5 +216,25 @@ async function handleSubmit() {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #c0c4cc;
+  background: #f5f7fa;
+}
+
+.placeholder-icon {
+  font-size: 48px;
+}
+
+.image-placeholder span {
+  font-size: 14px;
 }
 </style>

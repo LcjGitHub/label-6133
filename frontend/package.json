@@ -1,7 +1,8 @@
 {
-  "name": "stamp-record-frontend",
+  "name": "stamp-material-frontend",
   "version": "1.0.0",
   "private": true,
+  "description": "印材图鉴前端 - 印章材料展示与管理界面",
   "type": "module",
   "scripts": {
     "dev": "vite",

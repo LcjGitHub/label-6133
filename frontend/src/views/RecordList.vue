@@ -25,10 +25,14 @@
             </span>
             <span class="info-item">
               <el-icon><TrendCharts /></el-icon>
-              {{ item.hardness.split('，')[0] }}
+              {{ getHardnessShort(item.hardness) }}
             </span>
           </div>
-          <p class="card-desc">{{ item.description.slice(0, 60) }}...</p>
+          <div class="card-color">
+            <el-icon><Brush /></el-icon>
+            <span>{{ item.color }}</span>
+          </div>
+          <p class="card-desc">{{ truncateDescription(item.description) }}</p>
           <div class="card-actions" @click.stop>
             <el-button size="small" type="primary" @click="goDetail(item.id)">查看详情</el-button>
             <el-button size="small" @click="goEdit(item.id)">编辑</el-button>
@@ -46,7 +50,7 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Location, TrendCharts } from '@element-plus/icons-vue';
+import { Location, TrendCharts, Brush } from '@element-plus/icons-vue';
 import { useRecordStore } from '../stores/records';
 
 const router = useRouter();
@@ -55,6 +59,18 @@ const recordStore = useRecordStore();
 onMounted(() => {
   recordStore.loadRecords();
 });
+
+function getHardnessShort(hardness) {
+  if (!hardness) return '';
+  const parts = hardness.split('，');
+  return parts[0] || hardness;
+}
+
+function truncateDescription(text) {
+  if (!text) return '';
+  if (text.length <= 60) return text;
+  return text.slice(0, 60) + '...';
+}
 
 function goDetail(id) {
   router.push(`/records/${id}`);
@@ -159,6 +175,29 @@ async function handleDelete(row) {
 
 .info-item .el-icon {
   color: #409eff;
+}
+
+.card-color {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #606266;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.card-color .el-icon {
+  color: #e6a23c;
+  flex-shrink: 0;
+}
+
+.card-color span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .card-desc {

@@ -1,8 +1,8 @@
 {
-  "name": "stamp-record-app",
+  "name": "stamp-material-app",
   "version": "1.0.0",
   "private": true,
-  "description": "藏书印钤印日志",
+  "description": "印材图鉴 - 中国传统印章材料图鉴应用",
   "scripts": {
     "install:backend": "npm install --prefix backend",
     "install:frontend": "npm install --prefix frontend",

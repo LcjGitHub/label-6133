@@ -19,7 +19,7 @@
             </el-tag>
             <el-tag type="success" size="large">
               <el-icon><TrendCharts /></el-icon>
-              {{ record.hardness.split('，')[0] }}
+              {{ getHardnessShort(record.hardness) }}
             </el-tag>
           </div>
           <div class="color-preview">
@@ -78,6 +78,12 @@ onMounted(async () => {
     pageLoading.value = false;
   }
 });
+
+function getHardnessShort(hardness) {
+  if (!hardness) return '';
+  const parts = hardness.split('，');
+  return parts[0] || hardness;
+}
 
 function goBack() {
   router.push('/');
